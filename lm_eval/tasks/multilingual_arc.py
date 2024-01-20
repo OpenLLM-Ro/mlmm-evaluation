@@ -52,6 +52,7 @@ class MultilingualARC(MultipleChoiceTask):
         self.DATASET_NAME = f"arc_{lang}"
         self.DATASET_PATH = 'datasets/m_arc'
         self.NUM_FEW_SHOT = 25
+        print("ARC FEWSHOT:", self.NUM_FEW_SHOT)
         super().__init__(**kwargs)
 
     def has_training_docs(self):
@@ -76,12 +77,15 @@ class MultilingualARC(MultipleChoiceTask):
 
     def _process_doc(self, doc):
         # NOTE:
+        # print("doc:", doc)
         out_doc = {
             "id": doc["id"],
-            "query": "Question: " + doc["question"] + "\nAnswer:",
+            "query": "Întrebare: " + doc["question"] + "\nRăspuns:",
+            # "query": "Question: " + doc["question"] + "\nAnswer:",
             "choices": doc["choices"],
             "gold": ["A", "B", "C", "D", "E"].index(doc["answerKey"]),
         }
+        # print("out_doc:", out_doc)
         return out_doc
 
     def doc_to_text(self, doc):

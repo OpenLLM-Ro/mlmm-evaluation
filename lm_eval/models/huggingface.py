@@ -11,6 +11,7 @@ from accelerate import find_executable_batch_size
 
 from lm_eval import utils
 from lm_eval.base import BaseLM
+import sys
 
 TokenSequence = Union[List[int], torch.LongTensor, torch.Tensor, BatchEncoding]
 
@@ -145,6 +146,7 @@ class HuggingFaceAutoLM(BaseLM):
         assert isinstance(pretrained, str)
         assert isinstance(device, str)
         assert isinstance(batch_size, (int, str))
+        print("base: {0} | peft: {1}".format(pretrained, peft))
         if (
                 add_special_tokens is not None
                 and self.AUTO_MODEL_CLASS is transformers.AutoModelForCausalLM
@@ -179,7 +181,8 @@ class HuggingFaceAutoLM(BaseLM):
             subfolder=subfolder,
             tokenizer=tokenizer,
         )
-
+        print("Len tokenizer:", len(self.tokenizer), flush=True)
+        # sys.exit()
         self.tokenizer.model_max_length = self.max_length
 
         model_kwargs = {}
@@ -191,6 +194,7 @@ class HuggingFaceAutoLM(BaseLM):
                 offload_folder,
             )
         model_kwargs["load_in_8bit"] = load_in_8bit
+        print("Loading model")
         self.model = self._create_auto_model(
             pretrained=pretrained,
             trust_remote_code=trust_remote_code,
@@ -201,6 +205,7 @@ class HuggingFaceAutoLM(BaseLM):
         )
         # note: peft_path can be different than pretrained model path
         if peft is not None:
+            print("Loading peft")
             self.model = self._create_auto_model_peft(
                 model=self.model,
                 peft=peft,
@@ -211,7 +216,6 @@ class HuggingFaceAutoLM(BaseLM):
             )
         self.model.eval()
         torch.set_grad_enabled(False)
-
         self._device = device
         if use_accelerate and "lm_head" in self.model.hf_device_map:
             # `accelerate` can place `lm_head` weights on a different device than

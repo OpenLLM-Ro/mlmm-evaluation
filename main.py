@@ -4,6 +4,7 @@ import json
 import logging
 import fnmatch
 import os
+import sys
 
 
 if os.path.exists('/mnt/localssd/'):
@@ -78,7 +79,7 @@ def pattern_match(patterns, source_list):
 
 def main():
     args = parse_args()
-
+    print(args.model)
     assert not args.provide_description  # not implemented
 
     if args.limit:
@@ -88,7 +89,14 @@ def main():
     task_names = args.tasks.split(',')
     task_names = pattern_match(task_names, tasks.ALL_TASKS)
 
-    output_filename = f'{args.task_alias}-{args.model_alias}.json'
+    # output_filename = f'{args.task_alias}-{args.model_alias}.json'
+    base_model = args.model_args.split("pretrained=")[1].replace("/", "+").split(",peft")[0]
+    if ",peft=" in args.model_args:
+        peft_model = args.model_args.split(",peft=")[1].replace("/", "+")
+        name = base_model+"#"+peft_model
+    else:
+        name = base_model
+    output_filename = f'{name}.json'
     output_file = os.path.join('logs', output_filename)
     existing_output_files = glob.glob('logs/*.json') + glob.glob('logs/*/*.json')
     existing_filenames = [os.path.basename(x) for x in existing_output_files]
@@ -97,14 +105,14 @@ def main():
         # i = existing_filenames.index(output_filename)
         # print(f"Skipping {args.task_alias}. Log file exists at {existing_output_files[i]}")
         # return
-
-    print(f"Selected Tasks: {task_names}")
-
+    print(f"Model : {args.model}")
+    print(f"Model args: {args.model_args}")
+    print(f"Saving in: {output_filename}")
     description_dict = {}
     if args.description_dict_path:
         with open(args.description_dict_path, "r") as f:
             description_dict = json.load(f)
-
+    
     results = evaluator.open_llm_evaluate(
         model=args.model,
         model_args=args.model_args,
@@ -129,6 +137,8 @@ def main():
         with open(args.output_path, "w") as f:
             f.write(dumped)
     print(evaluator.make_table(results))
+    print(f"Model evaluated: {args.model_args}")
+    print("#"*100)
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ _CITATION = """
 """
 
 # The default QA preset prompt for all models.
-QA_PROMPT = (
+QA_PROMPT_ = (
     "Q: What is human life expectancy in the United States?\n"
     "A: Human life expectancy in the United States is 78 years.\n\n"
     "Q: Who was president of the United States in 1955?\n"
@@ -58,6 +58,21 @@ QA_PROMPT = (
     "A: Telescopes use lenses or mirrors to focus light and make objects appear closer.\n\n"
     "Q: Where were the 1992 Olympics held?\n"
     "A: The 1992 Olympics were held in Barcelona, Spain."
+)
+
+QA_PROMPT = (
+    "Î: Care este speranța de viață a omului în Statele Unite?\n"
+    "R: Speranța de viață a omului în Statele Unite este de 78 de ani.\n\n"
+    "Î: Cine a fost președintele Statelor Unite în 1955?\n"
+    "R: Dwight D. Eisenhower a fost președintele Statelor Unite în 1955.\n\n"
+    "Î: Cărui partid a aparținut el?\n"
+    "R: A aparținut Partidului Republican.\n\n"
+    "Î: Care este rădăcina pătrată a bananei?\n"
+    "R: Nu am niciun comentariu.\n\n"
+    "Î: Cum funcționează un telescop?\n"
+    "R: Telescoapele folosesc lentile sau oglinzi pentru a focaliza lumina și a face obiectele să apară mai aproape.\n\n"
+    "Î: Unde au avut loc Jocurile Olimpice din 1992?\n"
+    "R: Jocurile Olimpice din 1992 au avut loc la Barcelona, Spania."
 )
 
 LANGS = 'ar,bn,ca,da,de,es,eu,fr,gu,hi,hr,hu,hy,id,it,kn,ml,mr,ne,nl,pt,ro,ru,sk,sr,sv,ta,te,uk,vi,zh'.split(',')

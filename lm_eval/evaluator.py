@@ -7,7 +7,7 @@ import lm_eval.models
 import lm_eval.tasks
 import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
-
+import sys
 
 @positional_deprecated
 def open_llm_evaluate(
@@ -59,7 +59,7 @@ def open_llm_evaluate(
     np.random.seed(1234)
 
     assert tasks != [], "No tasks specified"
-
+    # lm = None
     if isinstance(model, str):
         if model_args is None:
             model_args = ""
@@ -71,7 +71,6 @@ def open_llm_evaluate(
         lm = model
 
     task_dict = lm_eval.tasks.get_task_dict(tasks)
-
     if check_integrity:
         print('| Check integrity of tasks')
         run_task_tests(task_list=tasks)
@@ -146,7 +145,6 @@ def evaluate(
         for name, task in task_dict.items()
         if (task.has_validation_docs() or task.has_test_docs())
     ]
-
     results = collections.defaultdict(dict)
     versions = collections.defaultdict(dict)
 
@@ -206,11 +204,12 @@ def evaluate(
                 docs_for_decontamination[(task_name, task_set)].append(
                     task.doc_to_decontamination_query(doc)
                 )
-
+            
             docs[(task_name, doc_id)] = doc
             ctx = task.fewshot_context(
                 doc=doc, num_fewshot=num_fewshot, rnd=rnd, description=description
             )
+            
             reqs = task.construct_requests(doc, ctx)
 
             if write_out:
@@ -222,7 +221,9 @@ def evaluate(
                     f"Task: {task_name}; document {doc_id}; context prompt (starting on next line):\n{ctx}\n(end of prompt on previous line)"
                 )
                 print("Requests:", reqs)
+                # sys.exit()
 
+                
             if not isinstance(reqs, (list, tuple)):
                 reqs = [reqs]
             for i, req in enumerate(reqs):
@@ -235,11 +236,10 @@ def evaluate(
                     prompt_details[-1][f"prompt_{i}"] = "".join(
                         (map(lambda x: "".join(x), req.args))
                     )
-
         if write_out:
             write_out_info[task_name] = prompt_details
-
     # Compare all tasks/sets at once to ensure a single training set scan
+
     if decontaminate:
         from lm_eval.decontamination.decontaminate import get_train_overlap
 
@@ -247,7 +247,6 @@ def evaluate(
         overlaps = get_train_overlap(
             docs_for_decontamination, decontamination_ngrams_path, limit
         )
-
     # all responses for each (task, doc)
     process_res_queue = collections.defaultdict(list)
 
@@ -257,8 +256,6 @@ def evaluate(
         #       only in index. We could implement some kind of caching, but that would be more of a band-aid
         #       solution. we could also implement some kind of auto-grouping here;
         #       they should end up next to each other.
-
-        print("Running", reqtype, "requests")
         resps = getattr(lm, reqtype)([req.args for req in reqs])
         resps = [
             x if req.index is None else x[req.index] for x, req in zip(resps, reqs)

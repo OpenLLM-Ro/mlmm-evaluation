@@ -43,9 +43,10 @@ def create_task(lang):
 
 class GeneralHendrycksTest(MultipleChoiceTask):
     VERSION = 0
-    NUM_FEW_SHOT = 25
+    NUM_FEW_SHOT = 1
     DATASET_PATH = "datasets/m_mmlu"
     DATASET_NAME = None
+    print("MMLU FEWSHOT:", NUM_FEW_SHOT)
 
     def __init__(self, lang):
         self.DATASET_NAME = f'mmlu_{lang}'
@@ -77,11 +78,11 @@ class GeneralHendrycksTest(MultipleChoiceTask):
             D. <choice4>
             Answer:
             """
-            prompt = "Question: " + doc["question"] + "\nChoices:\n"
+            prompt = "Întrebare: " + doc["question"] + "\nVariante:\n"
             prompt += "".join(
                 [f"{key}. {choice}\n" for key, choice in zip(keys, doc["choices"])]
             )
-            prompt += "Answer:"
+            prompt += "Răspuns:"
             return prompt
 
         keys = ["A", "B", "C", "D"]
@@ -99,7 +100,6 @@ class GeneralHendrycksTest(MultipleChoiceTask):
 
         if self._fewshot_docs is None:
             self._fewshot_docs = list(map(self._process_doc, self.dataset["dev"]))
-
         return rnd.sample(list(self._fewshot_docs), k)
 
     def doc_to_text(self, doc):

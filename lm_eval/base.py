@@ -16,6 +16,8 @@ from accelerate import find_executable_batch_size
 from lm_eval.metrics import mean, weighted_perplexity, weighted_mean, bits_per_byte
 from lm_eval import utils
 from abc import abstractmethod
+import sys
+
 
 
 class LM(abc.ABC):
@@ -663,9 +665,7 @@ class Task(abc.ABC):
             print(
                 "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
             )
-
         description = description + "\n\n" if description else ""
-
         if num_fewshot == 0:
             labeled_examples = ""
         else:
