@@ -239,6 +239,11 @@ class HuggingFaceAutoLM(BaseLM):
             torch_dtype: Optional[Union[str, torch.dtype]] = None,
     ) -> transformers.AutoModel:
         """Returns a pre-trained pytorch model from a pre-trained model configuration."""
+        # from transformers import LlamaConfig, LlamaForCausalLM
+        # configuration = LlamaConfig(vocab_size=32000, hidden_size=128, intermediate_size=128, num_hidden_layers=32, num_attention_heads=16)
+        # model = LlamaForCausalLM(configuration)
+        # return model
+
         model = self.AUTO_MODEL_CLASS.from_pretrained(
             pretrained,
             revision=revision + ("/" + subfolder if subfolder is not None else ""),
