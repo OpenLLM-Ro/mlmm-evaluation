@@ -8,6 +8,7 @@ import lm_eval.tasks
 import lm_eval.base
 from lm_eval.utils import positional_deprecated, run_task_tests
 import sys
+import copy
 
 @positional_deprecated
 def open_llm_evaluate(
@@ -358,8 +359,18 @@ def make_table(result_dict):
     values = []
 
     for k, dic in result_dict["results"].items():
+        og_k = copy.deepcopy(k)
         version = result_dict["versions"][k]
         for m, v in dic.items():
+            if og_k.startswith("arc") and m == "acc":
+                continue
+            if og_k.startswith("mmlu") and m == "acc_norm":
+                continue
+            if og_k.startswith("hellaswag") and m == "acc":
+                continue
+            if og_k.startswith("truthfulqa") and m == "mc1":
+                continue
+
             if m.endswith("_stderr"):
                 continue
 
