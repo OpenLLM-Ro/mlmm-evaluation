@@ -26,6 +26,8 @@ _CITATION = """
 """
 
 LANGS = 'ar,bn,ca,da,de,es,eu,fr,gu,hi,hr,hu,hy,id,it,kn,ml,mr,ne,nl,pt,ro,ru,sk,sr,sv,ta,te,uk,vi,zh'.split(',')
+LANGS = ["ro"]
+FS_VALUES = [1,3,5,10]
 
 
 def create_all_tasks():
@@ -33,13 +35,14 @@ def create_all_tasks():
     :return: {task_name: task}
         e.g. {hellaswag_vi: Task, hellaswag_en: Task}
     """
-    return {f"hellaswag_{lang}": create_task(lang) for lang in LANGS}
+    return {f"hellaswag_{lang}_fs{fs}": create_task(lang, fs) for fs in FS_VALUES for lang in LANGS}
 
 
-def create_task(lang):
+
+def create_task(lang, fs):
     class ATest(HellaSwag):
         def __init__(self):
-            super().__init__(lang)
+            super().__init__(lang, fs=fs)
 
 
     return ATest
@@ -47,12 +50,12 @@ def create_task(lang):
 
 class HellaSwag(MultipleChoiceTask):
 
-    def __init__(self, lang, **kwargs):
+    def __init__(self, lang, fs, **kwargs):
         self.VERSION = 1
         self.lang = lang
         self.DATASET_NAME = f"hellaswag_{lang}"
         self.DATASET_PATH = 'datasets/m_hellaswag'
-        self.NUM_FEW_SHOT = 0
+        self.NUM_FEW_SHOT = fs
         super().__init__(**kwargs)
 
 
