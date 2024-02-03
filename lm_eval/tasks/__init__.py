@@ -33,6 +33,7 @@ from . import multilingual_arc
 from . import multilingual_mmlu
 from . import multilingual_hellaswag
 from . import multilingual_truthfulqa
+from . import multilingual_winogrande
 from . import mutual
 from . import naturalqs
 from . import openbookqa
@@ -98,6 +99,7 @@ TASK_REGISTRY = {
     **multilingual_mmlu.create_all_tasks(),
     **multilingual_truthfulqa.create_all_tasks(),
     **multilingual_hellaswag.create_all_tasks(),
+    **multilingual_winogrande.create_all_tasks(),
 
     # GLUE
     "cola": glue.CoLA,
