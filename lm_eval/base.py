@@ -780,18 +780,9 @@ class MultipleChoiceTask(Task):
 
     def process_results(self, doc, results):
         gold = doc["gold"]
-        # print(doc)
-        # print(gold)
-        # print(results)
-
         acc = 1.0 if np.argmax(results) == gold else 0.0
         completion_len = np.array([float(len(i)) for i in doc["choices"]])
         acc_norm = 1.0 if np.argmax(results / completion_len) == gold else 0.0
-        # print(acc)
-        # print(acc_norm)
-        
-        # print()
-        # print()
 
 
         return {
