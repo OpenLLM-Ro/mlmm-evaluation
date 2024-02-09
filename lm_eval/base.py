@@ -685,14 +685,18 @@ class Task(abc.ABC):
                 # get rid of the doc that's the one we're evaluating, if it's in the fewshot
                 fewshotex = [x for x in fewshotex if x != doc][:num_fewshot]
 
+            if self.model_type == "foundational":
+                j = "\n\n"
+            elif self.model_type == "chat":
+                j = " "
             labeled_examples = (
-                    "\n\n".join(
+                    j.join(
                         [
                             self.doc_to_text(doc) + self.doc_to_target(doc)
                             for doc in fewshotex
                         ]
                     )
-                    + "\n\n"
+                    + j
             )
 
         example = self.doc_to_text(doc)
@@ -714,10 +718,19 @@ class MultipleChoiceTask(Task):
 
     def process_results(self, doc, results):
         gold = doc["gold"]
+        print(doc)
+        print(gold)
+        print(results)
 
         acc = 1.0 if np.argmax(results) == gold else 0.0
         completion_len = np.array([float(len(i)) for i in doc["choices"]])
         acc_norm = 1.0 if np.argmax(results / completion_len) == gold else 0.0
+        print(acc)
+        print(acc_norm)
+        
+        print()
+        print()
+
 
         return {
             "acc": acc,

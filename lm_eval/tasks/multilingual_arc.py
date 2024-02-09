@@ -26,35 +26,36 @@ _CITATION = """
 
 LANGS = 'ar,bn,ca,da,de,es,eu,fr,gu,hi,hr,hu,hy,id,it,kn,ml,mr,ne,nl,pt,ro,ru,sk,sr,sv,ta,te,uk,vi,zh'.split(',')
 LANGS = ["ro"]
-FS_VALUES = [1,3,5,10,25]
+FS_VALUES = [0,1,3,5,10,25]
 
 def create_all_tasks():
     """Creates a dictionary of tasks from a list of subjects
     :return: {task_name: task}
         e.g. {arc_vi: Task, arc_bn: Task}
     """
-    return {f"arc_{lang}_fs{fs}": create_task(lang, fs) for fs in FS_VALUES for lang in LANGS}
+    return {f"arc_{lang}_fs{fs}_{prompt}": create_task(lang, fs, prompt) for fs in FS_VALUES for lang in LANGS for prompt in ["foundational", "chat"]}
 
 
-def create_task(lang, fs):
+def create_task(lang, fs, model_type):
 
     class ATest(MultilingualARC):
         def __init__(self):
-            super().__init__(lang, fs=fs)
+            super().__init__(lang, fs=fs, model_type=model_type)
 
     return ATest
 
 
 class MultilingualARC(MultipleChoiceTask):
 
-    def __init__(self, lang, fs, **kwargs):
+    def __init__(self, lang, fs, model_type, **kwargs):
         self.VERSION = 0
         self.lang = lang
         self.DATASET_NAME = f"arc_{lang}"
         self.DATASET_PATH = 'datasets/m_arc'
         self.NUM_FEW_SHOT = fs
+        self.model_type = model_type
         print("ARC FEWSHOT:", self.NUM_FEW_SHOT)
-        # sys.exit()
+        print("Model type:", model_type)
         super().__init__(**kwargs)
 
     def has_training_docs(self):
@@ -80,14 +81,20 @@ class MultilingualARC(MultipleChoiceTask):
     def _process_doc(self, doc):
         # NOTE:
         # print("doc:", doc)
+        if self.model_type == "foundational":
+            bos = "Întrebare: "
+            eos = "\nRăspuns:"
+        elif self.model_type == "chat":
+            bos = "[INST] "
+            eos = " [/INST]"
+
         out_doc = {
             "id": doc["id"],
-            "query": "Întrebare: " + doc["question"] + "\nRăspuns:",
-            # "query": "Question: " + doc["question"] + "\nAnswer:",
+            "query": bos + doc["question"] + eos,
             "choices": doc["choices"],
             "gold": ["A", "B", "C", "D", "E"].index(doc["answerKey"]),
         }
-        # print("out_doc:", out_doc)
+
         return out_doc
 
     def doc_to_text(self, doc):
