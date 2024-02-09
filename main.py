@@ -46,7 +46,6 @@ def parse_args():
     parser.add_argument("--model_args", type=str, required=True)
     parser.add_argument("--tasks", default='arc_vi,mmlu_vi,hellaswag_vi', required=True)
     parser.add_argument("--provide_description", action="store_true")
-    # parser.add_argument("--num_fewshot", type=int, default=0)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--device", type=str, default='cuda')
     parser.add_argument("--output_path", default=None)
