@@ -20,6 +20,64 @@ import sys
 
 
 
+B_INST, E_INST = "[INST]", "[/INST]"
+B_SYS, E_SYS = "<<SYS>>\n", "\n<</SYS>>\n\n"
+DEFAULT_SYSTEM_PROMPT_RO = """\
+Ești un asistent folositor, respectuos și onest. Încearcă să ajuți cât mai mult prin informațiile oferite, excluzând răspunsuri toxice, rasiste, sexiste, periculoase și ilegale."""
+
+def format_conv(dialog, system_prompt=None):
+    if system_prompt == None:
+        system_prompt = DEFAULT_SYSTEM_PROMPT_RO
+    
+    # print("dialog:", dialog)
+    dialog_text = ""
+    # print("dialog:", dialog)
+    # print(list(map(lambda x: x["role"], dialog)))
+    if dialog[0]["role"] != "system":
+            dialog = [
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                }
+            ] + dialog
+    # print(list(map(lambda x: x["role"], dialog)))    
+    dialog = [
+        {
+            "role": dialog[1]["role"],
+            "content": B_SYS
+            + dialog[0]["content"]
+            + E_SYS
+            + dialog[1]["content"],
+        }
+    ] + dialog[2:]
+    # print(list(map(lambda x: x["role"], dialog)))
+    # print(len(dialog))
+    # print(dialog[0])
+    # print()
+    assert all([msg["role"] == "user" for msg in dialog[::2]]) and all(
+        [msg["role"] == "assistant" for msg in dialog[1::2]]
+    ), (
+        "model only supports 'system','user' and 'assistant' roles, "
+        "starting with user and alternating (u/a/u/a/u...)"
+    )
+    """
+    Please verify that yout tokenizer support adding "[INST]", "[/INST]" to your inputs.
+    Here, we are adding it manually.
+    """
+    dialog_text = [f"{B_INST} {(prompt['content']).strip()} {E_INST} {(answer['content']).strip()} "
+                   for prompt, answer in zip(dialog[::2], dialog[1::2])]
+
+    if dialog[-1]["role"] == "user":
+            # this is for inference
+        assert (
+            dialog[-1]["role"] == "user"
+        ), f"Last message must be from user, got {dialog[-1]['role']}"
+        dialog_text += f"{B_INST} {(dialog[-1]['content']).strip()} {E_INST}"
+    dialog_text = "".join(dialog_text)
+    return dialog_text
+
+
+
 class LM(abc.ABC):
     def __init__(self):
         pass
@@ -666,7 +724,7 @@ class Task(abc.ABC):
                 "WARNING: provide_description is deprecated and will be removed in a future version in favor of description_dict"
             )
         description = description + "\n\n" if description else ""
-        if num_fewshot == 0:
+        if num_fewshot == 0 and 1 == 0:
             labeled_examples = ""
         else:
             # for sets with no training docs, draw from other set *but ensure no overlap with current doc*
@@ -687,20 +745,24 @@ class Task(abc.ABC):
 
             if self.model_type == "foundational":
                 j = "\n\n"
+                labeled_examples = (j.join([self.doc_to_text(doc) + self.doc_to_target(doc) for doc in fewshotex]) + j)
+                example = self.doc_to_text(doc)
+                return description + labeled_examples + example
+
             elif self.model_type == "chat":
                 j = " "
-            labeled_examples = (
-                    j.join(
-                        [
-                            self.doc_to_text(doc) + self.doc_to_target(doc)
-                            for doc in fewshotex
-                        ]
-                    )
-                    + j
-            )
+                labeled_examples = [[self.doc_to_text(doc), self.doc_to_target(doc).strip()] for doc in fewshotex]
+                x = []
+                for le in labeled_examples:
+                    x.append({"role": "user", "content": le[0]})
+                    x.append({"role": "assistant", "content": le[1]})
 
-        example = self.doc_to_text(doc)
-        return description + labeled_examples + example
+                x.append({"role": "user", "content": self.doc_to_text(doc)})
+
+                return format_conv(x)
+
+            
+
 
 
 class MultipleChoiceTask(Task):
@@ -718,18 +780,18 @@ class MultipleChoiceTask(Task):
 
     def process_results(self, doc, results):
         gold = doc["gold"]
-        print(doc)
-        print(gold)
-        print(results)
+        # print(doc)
+        # print(gold)
+        # print(results)
 
         acc = 1.0 if np.argmax(results) == gold else 0.0
         completion_len = np.array([float(len(i)) for i in doc["choices"]])
         acc_norm = 1.0 if np.argmax(results / completion_len) == gold else 0.0
-        print(acc)
-        print(acc_norm)
+        # print(acc)
+        # print(acc_norm)
         
-        print()
-        print()
+        # print()
+        # print()
 
 
         return {

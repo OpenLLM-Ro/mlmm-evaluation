@@ -85,8 +85,8 @@ class MultilingualARC(MultipleChoiceTask):
             bos = "Întrebare: "
             eos = "\nRăspuns:"
         elif self.model_type == "chat":
-            bos = "[INST] "
-            eos = " [/INST]"
+            bos = ""
+            eos = ""
 
         out_doc = {
             "id": doc["id"],
