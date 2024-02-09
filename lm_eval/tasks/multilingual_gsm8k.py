@@ -119,8 +119,6 @@ class GradeSchoolMath8K(Task):
     def _is_correct(self, completion, answer):
         gold = self._extract_answer(answer)
         assert gold != INVALID_ANS, "No ground truth answer found in the document."
-        
-        print(completion, self._extract_answer(completion))
         return self._extract_answer(completion) == gold
 
     def process_results(self, doc, results):
