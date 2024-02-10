@@ -81,7 +81,7 @@ class MultilingualARC(MultipleChoiceTask):
     def _process_doc(self, doc):
         # NOTE:
         # print("doc:", doc)
-        if self.model_type == "foundational":
+        if self.model_type == "foundational" or 1 == 1:
             bos = "Întrebare: "
             eos = "\nRăspuns:"
         elif self.model_type == "chat":
