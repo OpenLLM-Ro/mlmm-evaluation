@@ -742,7 +742,7 @@ class Task(abc.ABC):
 
                 # get rid of the doc that's the one we're evaluating, if it's in the fewshot
                 fewshotex = [x for x in fewshotex if x != doc][:num_fewshot]
-
+            self.model_type = "foundational"
             if self.model_type == "foundational":
                 j = "\n\n"
                 labeled_examples = (j.join([self.doc_to_text(doc) + self.doc_to_target(doc) for doc in fewshotex]) + j)
