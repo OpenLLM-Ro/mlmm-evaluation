@@ -30,7 +30,7 @@ _CITATION = """
 """
 LANGS = 'ar,bn,ca,da,de,es,eu,fr,gu,hi,hr,hu,hy,id,it,kn,ml,mr,ne,nl,pt,ro,ru,sk,sr,sv,ta,te,uk,vi,zh'.split(',')
 LANGS = ["ro"]
-FS_VALUES = [1,3,5]
+FS_VALUES = [0,1,3,5]
 
 
 def create_all_tasks():

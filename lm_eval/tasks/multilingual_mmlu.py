@@ -24,7 +24,7 @@ _CITATION = """
 """
 LANGS = 'ar,bn,ca,da,de,es,eu,fr,gu,hi,hr,hu,hy,id,it,kn,ml,mr,ne,nl,pt,ro,ru,sk,sr,sv,ta,te,uk,vi,zh'.split(',')
 LANGS = ["ro"]
-FS_VALUES = [1,3,5]
+FS_VALUES = [0,1,3,5]
 
 
 def create_all_tasks():
@@ -32,14 +32,14 @@ def create_all_tasks():
     :return: {task_name: task}
         e.g. {hendrycksTest-abstract_algebra: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"mmlu_{lang}_fs{fs}": create_task(lang, fs) for fs in FS_VALUES for lang in LANGS}
+    return {f"mmlu_{lang}_fs{fs}_{prompt}": create_task(lang, fs, prompt) for fs in FS_VALUES for lang in LANGS for lang in LANGS for prompt in ["foundational", "chat"]}
 
 
 
-def create_task(lang, fs):
+def create_task(lang, fs, model_type):
     class HendrycksTest(GeneralHendrycksTest):
         def __init__(self):
-            super().__init__(lang, fs)
+            super().__init__(lang, fs, model_type=model_type)
 
     return HendrycksTest
 
@@ -50,9 +50,12 @@ class GeneralHendrycksTest(MultipleChoiceTask):
     DATASET_NAME = None
 
 
-    def __init__(self, lang, fs):
+    def __init__(self, lang, fs, model_type):
         self.DATASET_NAME = f'mmlu_{lang}'
         self.NUM_FEW_SHOT = fs
+        self.model_type = model_type
+        print("MMLU FEWSHOT:", self.NUM_FEW_SHOT)
+        print("Model type:", model_type)
         super().__init__()
 
     def has_training_docs(self):
