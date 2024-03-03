@@ -32,7 +32,7 @@ def create_all_tasks():
     :return: {task_name: task}
         e.g. {hendrycksTest-abstract_algebra: Task, hendrycksTest-anatomy: Task}
     """
-    return {f"mmlu_{lang}_fs{fs}_{prompt}": create_task(lang, fs, prompt) for fs in FS_VALUES for lang in LANGS for lang in LANGS for prompt in ["foundational", "chat"]}
+    return {f"mmlu_{lang}_fs{fs}": create_task(lang, fs, "foundational") for fs in FS_VALUES for lang in LANGS for lang in LANGS}
 
 
 
