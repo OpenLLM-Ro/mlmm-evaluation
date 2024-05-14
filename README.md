@@ -1,3 +1,20 @@
+# RoLlama
+
+Official code used for evaluating LLMs on romanian
+
+```
+@misc{masala2024openllmro,
+      title={OpenLLM-Ro - Technical Report on Open-source Romanian LLMs trained starting from Llama 2}, 
+      author={Mihai Masala and Denis C. Ilie-Ablachim and Dragos Corlatescu and Miruna Zavelca and Marius Leordeanu and Horia Velicu and Marius Popescu and Mihai Dascalu and Traian Rebedea},
+      year={2024},
+      eprint={2405.07703},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+```
+# Original README
+
+
 <h1 align="center"> <p> Evaluation Framework for Multilingual Large Language Models </p></h1>
 
 <div align="center">
