@@ -1,3 +1,5 @@
+# This code is obsolete, please use the new [repo](https://github.com/OpenLLM-Ro/lm-evaluation-harness)!
+
 # RoLlama
 
 Official code used for evaluating LLMs on romanian
