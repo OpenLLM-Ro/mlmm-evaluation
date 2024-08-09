@@ -2,7 +2,7 @@
 
 Official code used for evaluating LLMs on romanian
 
-```
+```bibtex
 @misc{masala2024openllmro,
       title={OpenLLM-Ro - Technical Report on Open-source Romanian LLMs trained starting from Llama 2}, 
       author={Mihai Masala and Denis C. Ilie-Ablachim and Dragos Corlatescu and Miruna Zavelca and Marius Leordeanu and Horia Velicu and Marius Popescu and Mihai Dascalu and Traian Rebedea},
